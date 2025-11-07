@@ -27,11 +27,26 @@ public class ApiResponse<T> {
                 .build();
     }
 
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return ApiResponse.<T>builder()
+                .data(data)
+                .message(message)
+                .status("success")
+                .build();
+    }
+
     public static <T> ApiResponse<T> success(T data, Metadata metadata) {
         return ApiResponse.<T>builder()
                 .data(data)
                 .metadata(metadata)
                 .status("success")
+                .build();
+    }
+    
+    public static <T> ApiResponse<T> error(String message) {
+        return ApiResponse.<T>builder()
+                .message(message)
+                .status("error")
                 .build();
     }
 }

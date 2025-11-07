@@ -13,13 +13,13 @@ import com.toronto.opendata.dataportal.model.MultiPointModel;
 import com.toronto.opendata.dataportal.util.GeometryParser;
 
 @Service
-public class PointsOfInterestService {
+public class CulturalHotSpotService {
 
     private CSVReaderService csvReaderService;
     private String csvFilePath = "data/points-of-interest-05-11-2025.csv";
     
     @Autowired
-    public PointsOfInterestService(CSVReaderService csvReaderService) {
+    public CulturalHotSpotService(CSVReaderService csvReaderService) {
         this.csvReaderService = csvReaderService;
     }
 
@@ -58,5 +58,15 @@ public class PointsOfInterestService {
         
         return culturalHotSpots;
     }
-    
+
+    public CulturalHotSpotModel getCulturalHotSpotById(String id) {
+        List<CulturalHotSpotModel> hotSpots = getCulturalHotSpots();
+        for (CulturalHotSpotModel spot : hotSpots) {
+            if (spot.getId() != null && spot.getId().equals(id)) {
+                return spot;
+            }
+        }
+        return null; // Not found
+    }
+
 }

@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 @Service
 public class MapService {
     
-    private final PointsOfInterestService pointsOfInterestService;
+    private final CulturalHotSpotService culturalHotSpotService;
     
-    public MapService(PointsOfInterestService pointsOfInterestService) {
-        this.pointsOfInterestService = pointsOfInterestService;
+    public MapService(CulturalHotSpotService culturalHotSpotService) {
+        this.culturalHotSpotService = culturalHotSpotService;
     }
     
     /**
      * Get all cultural hotspots as simple map points
      */
     public List<MapPointDTO> getMapPoints() {
-        return pointsOfInterestService.getCulturalHotSpots().stream()
+        return culturalHotSpotService.getCulturalHotSpots().stream()
                 .filter(spot -> spot.getLocation() != null)
                 .map(this::toMapPoint)
                 .collect(Collectors.toList());
@@ -35,7 +35,7 @@ public class MapService {
      * Get cultural hotspots within a bounding box
      */
     public List<MapPointDTO> getMapPointsInBounds(Double minLat, Double maxLat, Double minLon, Double maxLon) {
-        return pointsOfInterestService.getCulturalHotSpots().stream()
+        return culturalHotSpotService.getCulturalHotSpots().stream()
                 .filter(spot -> {
                     if (spot.getLocation() == null) return false;
                     double lat = spot.getLocation().getY();
@@ -51,7 +51,7 @@ public class MapService {
      * This format is compatible with Leaflet, Mapbox, and other mapping libraries
      */
     public GeoJsonFeatureCollectionDTO getGeoJsonFeatureCollection() {
-        List<GeoJsonFeatureDTO> features = pointsOfInterestService.getCulturalHotSpots().stream()
+        List<GeoJsonFeatureDTO> features = culturalHotSpotService.getCulturalHotSpots().stream()
                 .filter(spot -> spot.getLocation() != null)
                 .map(this::toGeoJsonFeature)
                 .collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class MapService {
      * Get cultural hotspots within radius of a point
      */
     public List<MapPointDTO> getMapPointsNearby(Double centerLat, Double centerLon, Double radiusKm) {
-        return pointsOfInterestService.getCulturalHotSpots().stream()
+        return culturalHotSpotService.getCulturalHotSpots().stream()
                 .filter(spot -> {
                     if (spot.getLocation() == null) return false;
                     double distance = calculateDistance(

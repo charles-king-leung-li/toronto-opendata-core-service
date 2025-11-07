@@ -1,0 +1,17 @@
+# Local Development Configuration
+# Copy this file to application-local.properties and add your actual values
+# DO NOT commit application-local.properties to git
+
+# Google Maps API Key
+google.maps.api.key=your_actual_api_key_here
+
+# CORS Configuration (optional - defaults are fine for local development)
+# cors.allowed-origins=http://localhost:3000,http://localhost:8080
+
+# Database Configuration (optional - H2 defaults work fine)
+# spring.datasource.url=jdbc:h2:mem:torontodb
+# spring.datasource.username=sa
+# spring.datasource.password=
+
+# Server Port (optional - defaults to 8080)
+# server.port=8080

@@ -28,6 +28,7 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+/documentation
 
 ### VS Code ###
 .vscode/
@@ -35,5 +36,13 @@ build/
 ### Environment Variables ###
 .env
 .env.local
+.env.*.local
 application-local.properties
 application-secret.properties
+*-secrets.properties
+
+### API Keys and Sensitive Data ###
+google-api-key.txt
+*.key
+*.pem
+*.p12

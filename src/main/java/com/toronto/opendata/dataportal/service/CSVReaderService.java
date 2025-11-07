@@ -40,6 +40,9 @@ public class CSVReaderService {
      * @throws IOException if file cannot be read
      */
     public List<Map<String, String>> readCSV(String filePath) throws IOException {
+        if (filePath == null) {
+            throw new IllegalArgumentException("filePath must not be null");
+        }
         List<Map<String, String>> records = new ArrayList<>();
         
         // Load from classpath
