@@ -10,6 +10,7 @@ import com.toronto.opendata.dataportal.repository.CulturalHotSpotRepository;
 @Configuration
 public class DataLoader {
     
+    @SuppressWarnings("null")
     @Bean
     CommandLineRunner loadData(CulturalHotSpotRepository repository) {
         return args -> {

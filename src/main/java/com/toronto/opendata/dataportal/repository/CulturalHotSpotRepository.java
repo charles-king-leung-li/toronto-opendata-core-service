@@ -1,7 +1,7 @@
 package com.toronto.opendata.dataportal.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +10,15 @@ import com.toronto.opendata.dataportal.model.CulturalHotSpot;
 @Repository
 public interface CulturalHotSpotRepository extends JpaRepository<CulturalHotSpot, Long> {
     
-    // Custom query methods
-    List<CulturalHotSpot> findByCategory(String category);
+    // TODO: When database is implemented, these methods will be ready
     
-    List<CulturalHotSpot> findByType(String type);
+    // Pagination is built-in from JpaRepository:
+    // Page<CulturalHotSpot> findAll(Pageable pageable);
     
-    List<CulturalHotSpot> findByNameContainingIgnoreCase(String name);
+    // TODO: Add pagination to search methods
+    Page<CulturalHotSpot> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    
+    Page<CulturalHotSpot> findByCategory(String category, Pageable pageable);
+    
+    Page<CulturalHotSpot> findByType(String type, Pageable pageable);
 }

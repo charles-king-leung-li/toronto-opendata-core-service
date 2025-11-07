@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.toronto.opendata</groupId>
-	<artifactId>open-data-api</artifactId>
+	<artifactId>toronto-opendata-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Toronto Open Data Service</name>
-	<description>RESTful API service for Toronto Open Data</description>
+	<name>Toronto Open Data API</name>
+	<description>Backend API service for Toronto Open Data - serving React Native frontend</description>
 	<url/>
 	<licenses>
 		<license/>
