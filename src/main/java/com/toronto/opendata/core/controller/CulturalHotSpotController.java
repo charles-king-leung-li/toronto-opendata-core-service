@@ -2,7 +2,6 @@ package com.toronto.opendata.core.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,6 @@ public class CulturalHotSpotController {
     
     private final CulturalHotSpotService service;
     
-    @Autowired
     public CulturalHotSpotController(CulturalHotSpotService service) {
         this.service = service;
     }

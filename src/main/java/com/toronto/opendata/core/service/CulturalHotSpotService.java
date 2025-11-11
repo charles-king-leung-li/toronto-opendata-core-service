@@ -1,75 +1,99 @@
 package com.toronto.opendata.core.service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.toronto.opendata.core.entity.CulturalHotSpotEntity;
 import com.toronto.opendata.core.model.CulturalHotSpotModel;
 import com.toronto.opendata.core.model.MultiPointModel;
+import com.toronto.opendata.core.repository.CulturalHotSpotRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class CulturalHotSpotService {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private final String csvFilePath = "data/points-of-interest-05-11-2025.csv";
+    private final CulturalHotSpotRepository repository;
     
+    /**
+     * Get all cultural hotspots from database
+     */
     public List<CulturalHotSpotModel> getAllCulturalHotSpots() {
-        List<CulturalHotSpotModel> hotSpots = new ArrayList<>();
-        
-        try {
-            ClassPathResource resource = new ClassPathResource(csvFilePath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-            
-            CSVParser csvParser = CSVParser.parse(reader, CSVFormat.DEFAULT
-                    .builder()
-                    .setHeader()
-                    .setSkipHeaderRecord(true)
-                    .build());
-            
-            for (CSVRecord record : csvParser) {
-                CulturalHotSpotModel hotSpot = new CulturalHotSpotModel();
-                hotSpot.setId(record.get("_id"));
-                hotSpot.setName(record.get("SiteName"));
-                hotSpot.setAddress(record.get("Address"));
-                hotSpot.setType(record.get("TourType"));
-                hotSpot.setDescription(record.get("Description"));
-                hotSpot.setPictureURL(record.get("ImageURL"));
-                
-                // Parse geometry
-                String geometryJson = record.get("geometry");
-                if (geometryJson != null && !geometryJson.trim().isEmpty()) {
-                    hotSpot.setLocation(parseGeometry(geometryJson));
-                }
-                
-                hotSpots.add(hotSpot);
-            }
-            
-            csvParser.close();
-            reader.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load cultural hotspots", e);
-        }
-        
-        return hotSpots;
+        log.debug("Fetching all cultural hotspots from database");
+        List<CulturalHotSpotEntity> entities = repository.findAll();
+        return entities.stream()
+                .map(this::entityToModel)
+                .collect(Collectors.toList());
     }
     
+    /**
+     * Get cultural hotspot by ID
+     */
     public CulturalHotSpotModel getCulturalHotSpotById(String id) {
-        return getAllCulturalHotSpots().stream()
-                .filter(spot -> spot.getId() != null && spot.getId().equals(id))
-                .findFirst()
+        log.debug("Fetching cultural hotspot with ID: {}", id);
+        return repository.findByCsvId(id)
+                .map(this::entityToModel)
                 .orElse(null);
     }
     
+    /**
+     * Get hotspots by neighbourhood
+     */
+    public List<CulturalHotSpotModel> getHotSpotsByNeighbourhood(String neighbourhood) {
+        log.debug("Fetching hotspots in neighbourhood: {}", neighbourhood);
+        return repository.findByNeighbourhood(neighbourhood).stream()
+                .map(this::entityToModel)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Search hotspots by interest
+     */
+    public List<CulturalHotSpotModel> searchByInterest(String interest) {
+        log.debug("Searching hotspots by interest: {}", interest);
+        return repository.findByInterestsContainingIgnoreCase(interest).stream()
+                .map(this::entityToModel)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Convert entity to model
+     */
+    private CulturalHotSpotModel entityToModel(CulturalHotSpotEntity entity) {
+        CulturalHotSpotModel model = new CulturalHotSpotModel();
+        model.setId(entity.getCsvId());
+        model.setName(entity.getSiteName());
+        model.setAddress(entity.getAddress());
+        model.setType(entity.getTourType());
+        model.setDescription(entity.getDescription());
+        model.setPictureURL(entity.getImageUrl());
+        
+        // Parse geometry from JSON or use lat/lon directly
+        if (entity.getLatitude() != null && entity.getLongitude() != null) {
+            model.setLocation(MultiPointModel.builder()
+                    .x(entity.getLongitude())
+                    .y(entity.getLatitude())
+                    .type("MultiPoint")
+                    .build());
+        } else if (entity.getGeometry() != null) {
+            model.setLocation(parseGeometry(entity.getGeometry()));
+        }
+        
+        return model;
+    }
+    
+    /**
+     * Parse geometry JSON (fallback for records without parsed lat/lon)
+     */
     private MultiPointModel parseGeometry(String geometryJson) {
         try {
             JsonNode root = objectMapper.readTree(geometryJson);
@@ -87,7 +111,7 @@ public class CulturalHotSpotService {
                 }
             }
         } catch (Exception e) {
-            // Return default on error
+            log.warn("Error parsing geometry: {}", e.getMessage());
         }
         
         return MultiPointModel.builder().x(0.0).y(0.0).type("Unknown").build();

@@ -1,7 +1,6 @@
 package com.toronto.opendata.core.service;
 
 import com.toronto.opendata.core.model.CkanPackageResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,7 +10,6 @@ public class CkanService {
     private static final String BASE_URL = "https://ckan0.cf.opendata.inter.prod-toronto.ca";
     private final RestTemplate restTemplate;
 
-    @Autowired
     public CkanService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
