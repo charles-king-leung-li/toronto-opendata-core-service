@@ -1,4 +1,4 @@
-package com.toronto.opendata.coreservice.exception;
+package com.toronto.opendata.core.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

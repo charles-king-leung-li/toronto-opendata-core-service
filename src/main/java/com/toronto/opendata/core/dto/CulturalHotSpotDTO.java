@@ -1,4 +1,4 @@
-package com.toronto.opendata.coreservice.dto;
+package com.toronto.opendata.core.dto;
 
 import lombok.Data;
 import lombok.Builder;
